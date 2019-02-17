@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<?php
+if($_SERVER['REQUEST_METHOD'] === "POST"){
+    require_once("./utilities/db_connection.php");
+    $email = $_POST['email'];
+    $key =  $_POST['key'];
+    $query = "SELECT * FROM users WHERE user_email = \"" . $email . "\" AND user_key = \"" . $key . "\";";
+    if($result = getResult($query)){
+        if(mysqli_num_rows($result) == 1){
+            $row = mysqli_fetch_array($result);
+            session_start();
+            $_SESSION["name"] = $row["name"]; 
+            $_SESSION["email"] = $row["user_email"];
+            header("Location: marks.html");
+        }
+        else{
+            header("Location: index.html?error=incorrect");
+        }
+    }
+    else{
+        die("ERROR101s: Could not connect. " . mysqli_connect_error());
+    }
+}
+?>
+<html>
+    <head>
+        <title> Marks Portal </title>
+        <style type="text/css">
+
+            body{
+                margin:0;
+                padding:0;
+                font-family: Sans-Serif;
+                line-height: 1.5em;
+            }
+            
+            main {
+                padding-bottom: 10010px;
+                margin-bottom: -10000px;
+                float: left;
+                width: 100%;
+            }
+            
+            #nav {
+                float: left;
+                width: 230px;
+                margin-left: -100%;
+                padding-bottom: 10010px;
+                margin-bottom: -10000px;
+                background: #eee;
+            }
+            
+            #wrapper {
+                overflow: hidden;
+            }
+            
+            #content {
+                margin-left: 230px; /* Same as 'nav' width */
+            }
+            
+            .innertube{
+                margin: 15px; /* Padding for content */
+                margin-top: 0;
+            }
+
+            .error {
+                padding-top: 7px;
+                padding-bottom: 7px;
+                background-color:  #ff9999;
+                color: black;
+                text-align: center;
+            }
+            
+            p {
+                color: #555;
+            }
+    
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            nav ul a {
+                color: darkgreen;
+                text-decoration: none;
+            }
+    
+        </style>
+    </head>
+    
+    <body>
+        <div id="wrapper">
+        
+            <main>
+                <div id="content">
+                    <div class="innertube">
+                        <i>Page last refreshed <?php echo date("F d, Y H:i:s");?></i>
+                        <h1>Student Verified Marks Reporting System</h1>
+                        <?php
+                            if(isset($_GET["error"])){
+                                if($_GET["error"] == "incorrect"){
+                                    echo "<div class=\"error\">Your username and/or key are incorrect</div>";
+                                }
+                                elseif($_GET["error"] == "incorrect"){
+                                    echo "<div class=\"error\">Your username and/or key are incorrect</div>";
+                                }
+                                elseif($_GET["error"] == "timed_out"){
+                                    echo "<div class=\"error\">Your session has timed out. Please login again.</div>";
+                                }
+                                else{
+                                    echo "<div class=\"error\">An unexpected error was experienced.</div>";
+                                }
+                                unset($_GET["error"]);
+                            }
+                        ?>
+                        <p> Welcome! This portal is aimed at showing how much you scored in each component throughout the semester. At the beginning of the semester a secret key would have been emailed to you - use that secret key to login to see your marks. 
+                        <ol>
+                            <li>Keep your secret key safe.</li> 
+                            <li>You can always generate a new secret key</li>
+                            <li>Only you can see your grades and marks, the way it should be. As opposed to making everyone's marks public on notice boards.</li>
+                        </ol>
+                        </p>
+                    </div>
+                <center><div id = "login">
+                    <form method="post" action="<?php echo $_SERVER["PHP_SELF"];?>">
+                        <label for="email">Email:</label>
+                        <input type="text" name="email" id="inputEmail">
+                        <label for="key">Key:</label>
+                        <input type="text" name="key" id="inputKey">
+                        <input type="submit" value="Submit">
+                    </form>
+                </div></center>
+                </div>
+
+                
+            </main>
+            
+            <nav id="nav">
+                <div class="innertube">
+                    <h3>About</h3>
+                    View the marks you've received in all your assignments, quizzes and homework at one place here. Only YOU can see your own marks. Please keep your secret key safe. 
+                    <br>
+                </div>
+            </nav>
+            
+        </div>
+    </body>
+</html>

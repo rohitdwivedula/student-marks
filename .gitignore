@@ -1,0 +1,4 @@
+private/db/config.ini
+private/gmail/composer*
+private/gmail/token.json
+private/gmail/vendor

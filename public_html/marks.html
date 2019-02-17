@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<?php
+session_start();
+$set = isset($_SESSION["name"]) && isset($_SESSION["email"]);
+if(!$set){
+    session_destroy();
+    header("Location: insdex.html?error=timed_out");
+}
+?>
+
+<?php
+if($_SERVER['REQUEST_METHOD'] === POST){
+    session_destroy();
+    header("Location: index.html");
+}
+?>
+<html>
+    <head>
+        <title> Marks Portal </title>
+        <style type="text/css">
+
+            body{
+                margin:0;
+                padding:0;
+                font-family: Sans-Serif;
+                line-height: 1.5em;
+            }
+            
+            main {
+                padding-bottom: 10010px;
+                margin-bottom: -10000px;
+                float: left;
+                width: 100%;
+            }
+            
+            #nav {
+                float: left;
+                width: 230px;
+                margin-left: -100%;
+                padding-bottom: 10010px;
+                margin-bottom: -10000px;
+                background: #eee;
+            }
+            
+            #wrapper {
+                overflow: hidden;
+            }
+            
+            .content {
+                margin-left: 230px; /* Same as 'nav' width */
+            }
+            
+            .innertube{
+                margin: 15px; /* Padding for content */
+                margin-top: 0;
+            }
+            
+            p {
+                color: #555;
+            }
+    
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            nav ul a {
+                color: darkgreen;
+                text-decoration: none;
+            }
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+
+            td, th {
+              border: 1px solid #dddddd;
+              text-align: left;
+              padding: 8px;
+            }
+
+            tr:nth-child(even) {
+              background-color: #dddddd;
+            }
+
+        </style>
+    </head>
+    
+    <body>
+        <div id="wrapper">
+        
+            <main>
+                <div class="content">
+                    <div class="innertube">
+                    	<i>Page last refreshed <?php echo date("F d, Y H:i:s");?></i>
+                        <h1>Student Verified Marks Reporting System</h1>
+                        <h2>Marks and Grades</h2>
+                        <?php
+                            require_once("./utilities/db_connection.php");
+                            $email = $_SESSION["email"];
+                            $query = "SELECT * FROM marks LEFT JOIN eval ON marks.eval_id = eval.eval_id WHERE user_email = '$email';";
+                            if($result = getResult($query)){
+                                echo "<table>
+                                    <tr>
+                                        <th>Eval Name</th>
+                                        <th>Date</th>
+                                        <th>Your Score</th>
+                                        <th>Max Marks</th>
+                                    </tr>";
+                                while($row = mysqli_fetch_array($result)){
+                                    $eval_name = $row["eval_name"];
+                                    $date = $row["date_of_eval"];
+                                    $score = $row["score"];
+                                    $max = $row["max_marks"];
+                                    echo "<tr>
+                                        <td>$eval_name</td>
+                                        <td>$date</td>
+                                        <td>$score</td>
+                                        <td>$max</td></tr>";
+                                }
+                            echo"</table>";
+                            }
+                            else{
+                                die("ERROR12: Could not connect. " . mysqli_connect_error());
+                            }
+                        ?>
+                    </div>
+                    <div id = "Logout">
+                	   <form method="post" action="<?php echo $_SERVER["PHP_SELF"];?>">
+    					   <input type="submit" value="Logout">
+					   </form>
+                    </div>
+                </div>
+            </main>
+            
+            <nav id="nav">
+                <div class="innertube">
+                    <h3>Welcome!</h3>
+                    <p>Hello <?php echo $_SESSION["name"]?>! Your registered email is <?php echo $_SESSION["email"]?>. Have a nice day!</p>
+                </div>
+            </nav>
+            
+        </div>
+    </body>
+</html>
