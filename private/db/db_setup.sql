@@ -23,6 +23,7 @@ CREATE TABLE marks (
 	user_email varchar(255) NOT NULL,
 	eval_id int NOT NULL,
 	score int NOT NULL,
+	verified bit,
 	PRIMARY KEY (record_number),
 	FOREIGN KEY (user_email) REFERENCES users(user_email),
 	FOREIGN KEY (eval_id) REFERENCES eval (eval_id)
