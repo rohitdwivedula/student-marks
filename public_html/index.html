@@ -11,6 +11,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
             session_start();
             $_SESSION["name"] = $row["name"]; 
             $_SESSION["email"] = $row["user_email"];
+            $_SESSION["admin"] = true;
             header("Location: marks.html");
         }
         else{
