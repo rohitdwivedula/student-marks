@@ -87,6 +87,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
             }
     
         </style>
+
     </head>
     
     <body>
@@ -100,9 +101,6 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                         <?php
                             if(isset($_GET["error"])){
                                 if($_GET["error"] == "incorrect"){
-                                    echo "<div class=\"error\">Your username and/or key are incorrect</div>";
-                                }
-                                elseif($_GET["error"] == "incorrect"){
                                     echo "<div class=\"error\">Your username and/or key are incorrect</div>";
                                 }
                                 elseif($_GET["error"] == "timed_out"){
@@ -127,7 +125,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                         <label for="email">Email:</label>
                         <input type="text" name="email" id="inputEmail">
                         <label for="key">Key:</label>
-                        <input type="text" name="key" id="inputKey">
+                        <input type="password" name="key" id="inputKey">
                         <input type="submit" value="Submit">
                     </form>
                 </div></center>

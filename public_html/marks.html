@@ -4,7 +4,7 @@ session_start();
 $set = isset($_SESSION["name"]) && isset($_SESSION["email"]);
 if(!$set){
     session_destroy();
-    header("Location: insdex.html?error=timed_out");
+    header("Location: index.html?error=timed_out");
 }
 ?>
 
@@ -86,6 +86,17 @@ if($_SERVER['REQUEST_METHOD'] === POST){
             }
 
         </style>
+        <?php if(isset($_GET['success']) && $_GET['success'] == 'no'): ?>
+        <style>
+            .error {
+                padding-top: 7px;
+                padding-bottom: 7px;
+                background-color:  #ff9999;
+                color: black;
+                text-align: center;
+            }
+        </style>
+        <?php endif?>
     </head>
     
     <body>
@@ -98,9 +109,17 @@ if($_SERVER['REQUEST_METHOD'] === POST){
                         <h1>Student Verified Marks Reporting System</h1>
                         <h2>Marks and Grades</h2>
                         <?php
+                            if(isset($_GET["success"])){
+                                if($_GET["success"] == "no"){
+                                    echo "<div class=\"error\">Unable to verify due to some error. Please try again and report this problem if it persists.</div>";
+                                }
+                            }
+                        ?>
+                        You can validate your marks and grades here. Press the verify button if the marks entered in the database are correct. (note that this cannot be undone.)
+                        <?php
                             require_once("./utilities/db_connection.php");
                             $email = $_SESSION["email"];
-                            $query = "SELECT * FROM marks LEFT JOIN eval ON marks.eval_id = eval.eval_id WHERE user_email = '$email';";
+                            $query = "SELECT marks.record_number, marks.user_email, eval.max_marks, eval.eval_id, marks.score, marks.verified, eval.eval_name, eval.date_of_eval FROM marks LEFT JOIN eval ON marks.eval_id = eval.eval_id WHERE marks.user_email='$email';";
                             if($result = getResult($query)){
                                 echo "<table>
                                     <tr>
@@ -108,19 +127,32 @@ if($_SERVER['REQUEST_METHOD'] === POST){
                                         <th>Date</th>
                                         <th>Your Score</th>
                                         <th>Max Marks</th>
+                                        <th>Verify</th>
                                     </tr>";
                                 while($row = mysqli_fetch_array($result)){
                                     $eval_name = $row["eval_name"];
                                     $date = $row["date_of_eval"];
                                     $score = $row["score"];
                                     $max = $row["max_marks"];
+                                    $eval_id = $row["eval_id"];
+                                    $verified = $row["verified"];
+                                    $marks_id = $row["record_number"];
                                     echo "<tr>
                                         <td>$eval_name</td>
                                         <td>$date</td>
                                         <td>$score</td>
-                                        <td>$max</td></tr>";
+                                        <td>$max</td>";
+                                    if(isset($verified)){
+                                    	echo"<td style='color:green'>Verified</td>";
+                                	}
+                                	else{
+                                        echo "<td>";
+                                		include "verify_button.php";
+                                        echo "</td>";
+                                	}
+                                    echo"</tr>";
                                 }
-                            echo"</table>";
+                            	echo"</table>";
                             }
                             else{
                                 die("ERROR12: Could not connect. " . mysqli_connect_error());
