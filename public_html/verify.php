@@ -33,5 +33,8 @@ if(!$set){
 				header("Location: marks.html?success=no");
 			}
 		}
-	}	
+	}
+	else{
+		header("Location: index.html?error=timed_out");
+	}
 ?>
