@@ -4,7 +4,8 @@ USE student_marks;
 CREATE TABLE users (
 	user_email varchar(255) NOT NULL,
 	user_key varchar(255) NOT NULL,
-	name varchar(255),
+	name varchar(255) NOT NULL,
+	salt varchar(255) NOT NULL,
 	admin bit,
 	PRIMARY KEY (user_email)
 );

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <?php
 if($_SERVER['REQUEST_METHOD'] === "POST"){
-    var_dump($_POST);
     require_once("./utilities/authenticate.php");
     authenticate($_POST["email"], $_POST["key"]);
 }

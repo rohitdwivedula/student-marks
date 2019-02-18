@@ -1,11 +1,12 @@
 <?php
 	function authenticate($email, $key){
 		require_once("db_connection.php");
-		$hashed_key = hash('sha512', $key);
-		$query = "SELECT user_key, name FROM users WHERE user_email = '$email';";
+		$query = "SELECT user_key, salt, name FROM users WHERE user_email = '$email';";
 		if($result = getResult($query)){
 			if(mysqli_num_rows($result) == 1){
 				$row = mysqli_fetch_array($result);
+				$salt = $row['salt'];
+				$hashed_key = hash('sha512', $key + $salt);
 				if($row['user_key'] == $hashed_key){
 					//correct password
 					session_start();
