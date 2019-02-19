@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <?php
-if($_SERVER['REQUEST_METHOD'] === "POST"){
-    require_once("./utilities/authenticate.php");
-    authenticate($_POST["email"], $_POST["key"]);
-}
+    if($_SERVER['REQUEST_METHOD'] == "POST"){
+    	$name = $_POST['name'];
+    	$email = $_POST['email'];
+    	$key = $_POST['key'];
+    	$confirm_key = $_POST['verifykey'];
+ 		if($key != $confirm_key){
+ 			header("Location: register.html?error=not_match");
+ 			exit();
+ 		}
+ 		require_once("./utilities/create_user.php");
+ 		$user = createUser($name, $email, $key);
+ 		if(strcmp($user, "ALREADY_EXISTS") == 0){
+ 		    header("Location: index.html?error=already_exists");
+ 			exit();
+ 		}
+        elseif(strcmp($user, "ERROR") == 0){
+            header("Location: index.html?error=yes");
+            exit();
+        }
+        elseif($user){
+            header("Location: index.html?success=account_created");
+            exit();
+        }
+	}
 ?>
 <html>
     <head>
@@ -24,6 +44,10 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 width: 100%;
             }
             
+            input {
+                float: center;
+                color:green;
+            }
             #nav {
                 float: left;
                 width: 230px;
@@ -53,14 +77,6 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 color: black;
                 text-align: center;
             }
-
-            .success {
-                padding-top: 7px;
-                padding-bottom: 7px;
-                background-color:  #009900;
-                color: black;
-                text-align: center;
-            }
             
             p {
                 color: #555;
@@ -83,7 +99,6 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     
     <body>
         <div id="wrapper">
-        
             <main>
                 <div id="content">
                     <div class="innertube">
@@ -91,14 +106,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                         <h1>Student Verified Marks Reporting System</h1>
                         <?php
                             if(isset($_GET["error"])){
-                                if($_GET["error"] == "incorrect"){
-                                    $message = "Your username and/or key are incorrect";
-                                }
-                                elseif($_GET["error"] == "timed_out"){
-                                    $message = "Your session has timed out. Please login again.";
-                                }
-                                elseif($_GET["error"] == "already_exists"){
-                                    $message = "An account with that email already exists.";
+                                if($_GET["error"] == "not_match"){
+                                    $message = "Your key and confirm key do not match.";
                                 }
                                 elseif($_GET["error"] == "notexists"){
                                     $message = "The account ID you've entered does not exist.";
@@ -107,39 +116,29 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                                     $message = "An unexpected error was experienced.";
                                 }
                                 echo "<div class='error'>$message</div>";
+                                unset($_GET["error"]);
                             }
                         ?>
-                        <?php
-                            if(isset($_GET["success"])){
-                                if($_GET["success"] == "account_created"){
-                                    $message = "Your account was successfully created";
-                                }
-                                if(isset($message)){
-                                    echo "<div class='success'>$message</div>";
-                                }
-                            }
-                        ?>
-                        <p> Welcome! This portal is aimed at showing how much you scored in each component throughout the semester. At the beginning of the semester a secret key would have been emailed to you - use that secret key to login to see your marks. 
-                        <ol>
-                            <li>Keep your secret key safe.</li> 
-                            <li>You can always generate a new secret key</li>
-                            <li>Only you can see your grades and marks, the way it should be. As opposed to making everyone's marks public on notice boards.</li>
-                        </ol>
-                        </p>
-                        <center>
-                        	<div id = "login">
-	                    		<form method="post" action="<?php echo $_SERVER["PHP_SELF"];?>">
-			                        <label for="email">Email:</label>
-			                        <input type="text" name="email" id="inputEmail">
-			                        <label for="key">Key:</label>
-			                        <input type="password" name="key" id="inputKey">
-			                        <input type="submit" value="Submit">
-	                   			 </form>
-	                		</div>
-	                	</center>
-	                    <p>Don't have an account yet? <a href="/register.html">Register here</a>.</p>
+                        <h2>Register New Account</h2>
                     </div>
-                </div>                
+                <center><div id = "register">
+                    <form method="post" style="text-align: left;" action="<?php echo $_SERVER["PHP_SELF"];?>">
+                        <center>
+                        <input type="text" name="name" maxlength="255" placeholder="Enter full name, eg Jon Doe" id="inputName">
+                        <br>
+                        <input type="email" name="email" maxlength="255" placeholder="Email address" id="inputEmail">
+                        <br>
+                        <input type="password" name="key" maxlength="255" placeholder="Secret Key (max 255 chars)" id="inputKey">
+                        <br>
+                        <input type="password" name="verifykey" maxlength="255" placeholder="Confirm Key (max 255 chars)" id="inputVerifyKey">
+                        <br><br>
+                        <input type="submit" value="Submit">
+                        </center>
+                    </form>
+                </div></center>
+                </div>
+
+                
             </main>
             
             <nav id="nav">

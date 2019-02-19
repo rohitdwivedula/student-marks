@@ -13,19 +13,23 @@
 					$_SESSION['name'] = $row['name'];
 					$_SESSION['email'] = $email;
 					header("Location: marks.html");
+					exit();
 				}
 				else{
 					//wrong password
 					header("Location: index.html?error=incorrect");
+					exit();
 				}
 			}
 			else{
 				//email not registered
 				header("Location: index.html?error=notexists");
+				exit();
 			}
 		}
 		else{
 			header("Location: index.html?error=yes");
+			exit();
 		}
 	}
 ?>
